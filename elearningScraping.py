@@ -9,7 +9,7 @@ s_headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebK
 
 session = requests.session()
 
-login_info = {'companyId': 'THD', 'userId': 'Jose.cornielhiciano@alorica.com','passwd': 'sjwVbXX6'}
+login_info = {'companyId': 'THD', 'userId': 'Jose.cornielhiciano@alorica.com','passwd': '******'}
 
 login_req = session.post(URL + login_route, headers = s_headers, data = login_info)
 
