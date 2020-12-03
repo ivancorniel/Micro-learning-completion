@@ -1,24 +1,48 @@
-from bs4 import BeautifulSoup as bs
-import requests
-from urllib.request import urlopen as uReq
-
-URL = 'https://thd.earlyconnect.com'
-login_route = '/Account/'
-
-s_headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36', 'origin': URL, 'referer': 'https://thd.earlyconnect.com/Account/'}
-
-session = requests.session()
-
-login_info = {'companyId': 'THD', 'userId': 'Jose.cornielhiciano@alorica.com','passwd': '******'}
-
-login_req = session.post(URL + login_route, headers = s_headers, data = login_info)
-
-cookies = login_req.cookies
+from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
+import time
+from datetime import datetime,date
+from re import *
 
 
-articles_page = bs(session.get('http://thd.earlyconnect.com/Admin/Report/ArticleList.aspx').text, 'html.parser')
+driver = webdriver.Chrome(ChromeDriverManager().install())
+driver.get('https://thd.earlyconnect.com/Account/Login.aspx')
 
-articles  = articles_page.findAll("div")
+time.sleep(1)
+user_id = driver.find_element_by_xpath('//*[@id="TextBoxUserId"]')
+pswd = driver.find_element_by_xpath('//*[@id="TextBoxPasswd"]')
+login_btn = driver.find_element_by_xpath('//*[@id="login"]')
+
+user_id.send_keys('jose.cornielhiciano@alorica.com')
+pswd.send_keys('sjwVbXX6')
+login_btn.click()
+
+time.sleep(1)
+
+driver.get('http://thd.earlyconnect.com/Admin/Report/ArticleList.aspx')
+
+global from_date
+from_date = "11-17-2020"
+
+from_date_field = driver.find_element_by_xpath('//*[@id="MainContent_TextBoxFromDate"]')
+tips = driver.find_element_by_xpath('//*[@id="MainContent_CheckBoxTip"]')
+refresh = driver.find_element_by_xpath('//*[@id="container"]/div[3]/div[1]/table/tbody/tr[1]/td[3]/a')
+from_date_field.send_keys(from_date)
+tips.click()
+refresh.click()
+time.sleep(1)
+articles = driver.find_elements_by_class_name("btn_gray15")
+
+def download_files():
+    details = article.get_attribute('href')
+    driver.execute_script("window.open('');")
+    driver.switch_to.window(driver.window_handles[1])
+    driver.get(details)
+    time.sleep(1)
+    file = driver.find_element_by_name('ctl00$MainContent$ImageButtonExport')
+    file.click()
+    driver.switch_to.window(driver.window_handles[0])
+
 
 for article in articles:
-    print(article.text)
+    download_files()
