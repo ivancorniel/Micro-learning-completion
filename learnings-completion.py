@@ -45,11 +45,11 @@ def download_files():
     file.click() #press the export button
     driver.switch_to.window(driver.window_handles[0]) #switch to the original tab to open next articles details
 
-login('jose.cornielhiciano@alorica.com', 'sjwVbXX6')
+login()
 
 time.sleep(1)
 
-get_articles('12/17/2020')
+get_articles()
 
 time.sleep(1)
 
