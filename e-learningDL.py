@@ -6,25 +6,28 @@ from datetime import datetime,date
 
 def main():
     main = Tk()
-    main.geometry("300x200")
+    main.geometry("330x175")
+    icon = PhotoImage(file = 'C:\projects\e-learningDL\images\icon.png')
+    main.iconphoto(False, icon)
+    main.title("E-learning Completion")
 
-    title_l = Label(main, text="E-learning Articles Download", font=('Arial', 12, "bold"), fg="#212121")
-    user_l = Label(main, text="User ID", font=('Arial', 12, "bold"), fg="#212121")
-    user_field = Entry(main)
-    password_l= Label(main, text="Password", font=('Arial', 12, "bold"), fg="#212121")
-    password_field = Entry(main, show = "*")
-    from_date_l = Label(main, text="From Date", font=('Arial', 12, "bold"), fg="#212121")
-    from_date_field = Entry(main)
-    dl_button = Button(main, text="Download", command = lambda:validate_fields(user_field.get(), password_field.get(), from_date_field.get()))
+    title_l = LabelFrame(main, text="Articles Report Download", font=('Arial', 12, "bold"), fg="#212121", pady = 5, padx = 5)
+    user_l = Label(title_l, text="User ID", font=('Arial', 12, "bold"), fg="#212121", pady = 5)
+    user_field = Entry(title_l, width = 30)
+    password_l= Label(title_l, text="Password", font=('Arial', 12, "bold"), fg="#212121", pady = 5)
+    password_field = Entry(title_l, width = 30, show = "*")
+    from_date_l = Label(title_l, text="Start Date", font=('Arial', 12, "bold"), fg="#212121", pady = 5)
+    from_date_field = Entry(title_l, width = 30)
+    dl_button = Button(title_l, text="Download", pady = 5, command = lambda:validate_fields(user_field.get(), password_field.get(), from_date_field.get()))
 
-    title_l.grid(row = 0, column = 0, columnspan = 2)
-    user_l.grid(row = 2, column = 0)
-    user_field.grid(row = 2, column = 1)
-    password_l.grid(row = 3, column = 0)
-    password_field.grid(row = 3, column = 1)
-    from_date_l.grid(row = 4, column = 0)
-    from_date_field.grid(row = 4, column = 1)
-    dl_button.grid(row = 5, column = 0, columnspan = 2)
+    title_l.pack()
+    user_l.grid(row = 1, column = 0,)
+    user_field.grid(row = 1, column = 1)
+    password_l.grid(row = 2, column = 0)
+    password_field.grid(row = 2, column = 1)
+    from_date_l.grid(row = 3, column = 0)
+    from_date_field.grid(row = 3, column = 1)
+    dl_button.grid(row = 4, column = 0, columnspan = 2)
 
     main.mainloop()
 
@@ -67,23 +70,35 @@ def download_files(article, driver):
     file.click() #press the export button
     driver.switch_to.window(driver.window_handles[0]) #switch to the original tab to open next articles details
 
+#validate al fields are filled out
 def validate_fields(user, password, from_date):
     if user == "" or password == "" or from_date == "":
         popup = Tk()
-        error = Label(popup, text = "All fields are required.")
+        popup.geometry("200x50")
+        popup.title("Error!")
+        error = Label(popup, text = "All fields are required.", pady = 10)
         error.pack()
+        popup.mainloop()
     else:
         download(user, password, from_date)
 
+#download files calling each function
 def download(user, password, from_date):
-    driver = webdriver.Chrome(ChromeDriverManager().install())
+    driver = webdriver.Chrome(ChromeDriverManager().install()) #use chrome as the browser for webdriver
     login(user, password, driver)
     time.sleep(1)
     get_articles(from_date, driver)
     time.sleep(1)
-    articles = driver.find_elements_by_class_name("btn_gray15")
+    mainlist = driver.find_element_by_xpath('//*[@id="MainContent_ImageButtonExport"]')
+    mainlist.click() #  download list of articles
+    articles = driver.find_elements_by_class_name("btn_gray15") #  download each articles' file
     for article in articles:
         download_files(article, driver)
+    driver.quit()
 
+# TODO
+#Resolve the list download
+
+#initiate program
 if __name__ == "__main__":
     main()
