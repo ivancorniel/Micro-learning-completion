@@ -33,7 +33,10 @@ def main():
 
 #go to the site and login
 def login(user,password, driver):
-    driver.get('https://thd.earlyconnect.com/Account/Login.aspx')
+    try:
+        driver.get('https://thd.earlyconnect.com/Account/Login.aspx')
+    except:
+        return "There is a problem loading the login page"
 
     #select elements to pass arguments
     user_id = driver.find_element_by_xpath('//*[@id="TextBoxUserId"]')
@@ -47,7 +50,10 @@ def login(user,password, driver):
 
 #go the the articles list page and list all articles
 def get_articles(from_date, driver):
-    driver.get('http://thd.earlyconnect.com/Admin/Report/ArticleList.aspx')
+    try:
+        driver.get('http://thd.earlyconnect.com/Admin/Report/ArticleList.aspx')
+    except:
+        return "Cannot load the articles page"
 
     #select elements to pass arguments
     from_date_field = driver.find_element_by_xpath('//*[@id="MainContent_TextBoxFromDate"]')
@@ -84,7 +90,10 @@ def validate_fields(user, password, from_date):
 
 #download files calling each function
 def download(user, password, from_date):
-    driver = webdriver.Chrome(ChromeDriverManager().install()) #use chrome as the browser for webdriver
+    try:
+        driver = webdriver.Chrome(ChromeDriverManager().install()) #use chrome as the browser for webdriver
+    except:
+        return "Webdriver not working"
     login(user, password, driver)
     time.sleep(1)
     get_articles(from_date, driver)
@@ -95,9 +104,6 @@ def download(user, password, from_date):
     for article in articles:
         download_files(article, driver)
     driver.quit()
-
-# TODO
-#Resolve the list download
 
 #initiate program
 if __name__ == "__main__":
