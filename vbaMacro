@@ -1,0 +1,101 @@
+Public Sub importdata()
+    'Set Variables
+    Dim article As Workbook
+    Dim openFiles() As Variant
+    Dim i As Integer
+    Dim thisfilename As String
+    
+    thisfile = ThisWorkbook.Name
+    
+    
+    openFiles = Application.GetOpenFilename(Title:="Select files to import", MultiSelect:=True)
+            
+    For i = 1 To Application.CountA(openFiles)
+               
+        Set article = Workbooks.Open(openFiles(i))
+            
+        'Copy the data
+        
+        If i = 1 Then
+        
+            article.Sheets(1).Range("A1").CurrentRegion.Copy
+        
+        Else
+        
+            Dim rng As Range
+            Set rng = ActiveSheet.UsedRange
+            Set rng = rng.Offset(1).Resize(rng.Rows.Count - 1)
+            rng.Copy
+                     
+        
+        End If
+        
+        
+        'Go back to original worksheet
+        Workbooks(thisfile).Activate
+        Range("A1").Select
+                
+        If ActiveCell.Value <> "" Then
+                
+            Selection.End(xlDown).Select
+            ActiveCell.Offset(1, 0).Select
+        
+        End If
+                
+        'paste the data
+        ActiveSheet.Paste
+        'rename tab
+        ActiveSheet.Name = "Assignments"
+           
+        'Clearclipboard
+        Application.CutCopyMode = False
+        
+        'close the filed imported
+        article.Close
+       
+    Next i
+    
+
+End Sub
+
+Public Sub elearningAddDates()
+    'set variables
+    Dim articleslist As Workbook
+    Dim lastDate As String
+    
+    thisfile = ThisWorkbook.Name
+    
+    'import articles data
+    openFiles = Application.GetOpenFilename(Title:="Select files to import", MultiSelect:=False)
+    Set articleslist = Workbooks.Open(openFiles)
+    Range("a1").CurrentRegion.Copy
+    Workbooks(thisfile).Activate
+    Worksheets("Articles").Select
+    Range("A1").Select
+'    Workbooks(thisfile).Worksheets.Add
+'    ActiveSheet.Name = "Articles"
+    ActiveSheet.Paste
+    Application.CutCopyMode = False
+    articleslist.Close
+    
+    'copy lauch and finish dates & get last date address
+    Range("p1").Select
+    Selection.End(xlDown).Select
+    lastDate = ActiveCell.Address
+    
+    'copy these titles
+    Range("o1,p1").Copy
+    
+    'paste titles in original sheet
+    Worksheets("assignments").Activate
+    Range("w1").Select
+    ActiveCell.PasteSpecial
+    
+    'add the launch and finish dates to assignments
+    Range("w2").Value = "=trunc(vlookup($a2,Articles!$b$1:" & lastDate & ",14,False))"
+    Range("x2").Value = "=trunc(vlookup($a2,Articles!$b$1:" & lastDate & ",15,False))"
+    
+    'copy these cells down for the entire list and change format to short date
+    
+    
+End Sub
